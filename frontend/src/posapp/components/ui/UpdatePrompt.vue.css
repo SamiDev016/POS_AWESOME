@@ -1,0 +1,10 @@
+
+.pos-update-snackbar {
+	max-width: 360px;
+}
+
+.pos-update-message {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}

@@ -1,0 +1,32 @@
+# Python / Frappe
+*.pyc
+__pycache__/
+*.sqlite
+*.log
+*.env
+*.pot
+*.py[co]
+*.pyo
+*.swp
+
+# Node / Frontend
+node_modules/
+yarn.lock
+package-lock.json
+dist/
+build/
+frontend/node_modules/
+frontend/dist/
+
+# Assets / Screenshots
+public/assets/
+posawesome/public/screenshots/
+wiki_images/
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+*.sublime-workspace
+*.sublime-project
+.idea/
+.vscode/

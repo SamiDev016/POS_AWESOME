@@ -38,41 +38,53 @@
 							<v-divider class="p-0 m-0"></v-divider>
 						</div>
 						<div>
-							<v-row density="default" class="overflow-y-auto" style="max-height: 500px">
-								<v-col
-									v-for="(item, idx) in displayItems"
-									:key="idx"
-									xl="2"
-									lg="3"
-									md="4"
-									sm="4"
-									cols="6"
-									min-height="50"
-								>
-									<v-card hover="hover" @click="add_item(item)">
-										<v-img
-											:src="item.image || placeholderImage"
-											class="text-white align-end"
-											gradient="to bottom, rgba(0,0,0,.2), rgba(0,0,0,.7)"
-											height="100px"
-										>
-											<v-card-text
-												v-text="item.item_name"
-												class="text-subtitle-2 px-1 pb-2"
-											></v-card-text>
-										</v-img>
-										<v-card-text class="text--primary pa-1">
-											<div class="text-caption text-primary text-accent-3">
-												{{
-													formatCurrencySafe(item.price_list_rate ?? item.rate ?? 0)
-												}}
-												{{ item.currency || "" }}
+							<div class="variants-list-container">
+								<div class="variants-list">
+									<div
+										v-for="(item, idx) in displayItems"
+										:key="idx"
+										class="variant-item"
+										:class="{
+											'variant-out-of-stock': !item.actual_qty || item.actual_qty <= 0,
+											'variant-low-stock': item.actual_qty > 0 && item.actual_qty < 5
+										}"
+										@click="add_item(item)"
+									>
+										<div class="variant-item-image">
+											<v-img
+												:src="item.image || placeholderImage"
+												class="item-image"
+												aspect-ratio="1"
+												cover
+											>
+												<template #placeholder>
+													<div class="image-placeholder">
+														<v-icon size="20" color="grey-lighten-2">
+															mdi-tshirt-crew
+														</v-icon>
+													</div>
+												</template>
+											</v-img>
+										</div>
+										<div class="variant-item-info">
+											<div class="item-name">{{ item.item_name }}</div>
+											<div class="item-details">
+												<span class="item-price">
+													{{ formatCurrencySafe(item.price_list_rate ?? item.rate ?? 0) }}
+													{{ item.currency || "" }}
+												</span>
+												<span class="item-stock" :class="getStockTextClass(item.actual_qty)">
+													<v-icon size="12" :class="getStockIconClass(item.actual_qty)">
+														{{ getStockIcon(item.actual_qty) }}
+													</v-icon>
+													{{ getStockText(item.actual_qty) }}
+												</span>
 											</div>
-										</v-card-text>
-									</v-card>
-								</v-col>
-								<div v-intersect="loadMore"></div>
-							</v-row>
+										</div>
+									</div>
+								</div>
+								<div v-intersect="loadMore" class="load-more-trigger"></div>
+							</div>
 						</div>
 					</v-container>
 				</v-card-text>
@@ -169,6 +181,35 @@ export default {
 				minimumFractionDigits: 0,
 				maximumFractionDigits: 2,
 			}).format(val);
+		},
+		formatQuantity(qty) {
+			if (!qty && qty !== 0) return '';
+			// Format quantity with up to 4 decimal places, remove trailing zeros
+			const formatted = parseFloat(qty).toFixed(4).replace(/\.?0+$/, '');
+			return formatted;
+		},
+		isNegative(value) {
+			return value < 0;
+		},
+		getStockIcon(qty) {
+			if (!qty || qty <= 0) return 'mdi-close-circle';
+			if (qty < 5) return 'mdi-alert-circle';
+			return 'mdi-check-circle';
+		},
+		getStockIconClass(qty) {
+			if (!qty || qty <= 0) return 'text-error';
+			if (qty < 5) return 'text-warning';
+			return 'text-success';
+		},
+		getStockTextClass(qty) {
+			if (!qty || qty <= 0) return 'text-error font-weight-bold';
+			if (qty < 5) return 'text-warning';
+			return 'text-success';
+		},
+		getStockText(qty) {
+			if (!qty || qty <= 0) return 'Out of Stock';
+			if (qty < 5) return `Only ${qty} left`;
+			return `${qty} in stock`;
 		},
 		applyCurrencyConversionToItem(item) {
 			if (!item) return;
@@ -381,3 +422,127 @@ export default {
 	},
 };
 </script>
+
+<style scoped>
+.variants-list-container {
+	max-height: 400px;
+	overflow-y: auto;
+	padding: 8px;
+}
+
+.variants-list {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.variant-item {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 8px;
+	border: 1px solid #e0e0e0;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	background: white;
+	min-height: 60px;
+}
+
+.variant-item:hover {
+	background: #f5f5f5;
+	border-color: #1976d2;
+	transform: translateX(4px);
+}
+
+.variant-out-of-stock {
+	opacity: 0.6;
+	border-color: #f44336;
+	background: #fafafa;
+}
+
+.variant-low-stock {
+	border-color: #ff9800;
+}
+
+.variant-item-image {
+	flex-shrink: 0;
+	width: 44px;
+	height: 44px;
+	border-radius: 6px;
+	overflow: hidden;
+}
+
+.item-image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.image-placeholder {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	background: #f5f5f5;
+}
+
+.variant-item-info {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	min-width: 0;
+}
+
+.item-name {
+	font-size: 13px;
+	font-weight: 500;
+	color: #333;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.item-details {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+
+.item-price {
+	font-size: 14px;
+	font-weight: 600;
+	color: #1976d2;
+}
+
+.item-stock {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 11px;
+}
+
+.load-more-trigger {
+	height: 1px;
+}
+
+/* Compact scrollbar */
+.variants-list-container::-webkit-scrollbar {
+	width: 4px;
+}
+
+.variants-list-container::-webkit-scrollbar-track {
+	background: #f1f1f1;
+}
+
+.variants-list-container::-webkit-scrollbar-thumb {
+	background: #c1c1c1;
+	border-radius: 2px;
+}
+
+.variants-list-container::-webkit-scrollbar-thumb:hover {
+	background: #a8a8a8;
+}
+</style>

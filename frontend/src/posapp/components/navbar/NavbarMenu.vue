@@ -173,7 +173,21 @@
 						}}</v-list-item-subtitle>
 					</div>
 				</v-list-item>
-
+				<v-list-item @click="$emit('open-payment-dialog')" class="menu-item-compact neutral-action">
+					<template v-slot:prepend>
+						<div class="menu-icon-wrapper-compact neutral-icon">
+							<v-icon color="white" size="16">mdi-cash</v-icon>
+						</div>
+					</template>
+					<div class="menu-content-compact">
+						<v-list-item-title class="menu-item-title-compact">{{
+							__("Payment")
+						}}</v-list-item-title>
+						<v-list-item-subtitle class="menu-item-subtitle-compact">{{
+							__("Make a payment")
+						}}</v-list-item-subtitle>
+					</div>
+				</v-list-item>
 				<v-divider class="menu-section-divider-compact"></v-divider>
 
 				<v-list-item @click="$emit('show-about')" class="menu-item-compact neutral-action">

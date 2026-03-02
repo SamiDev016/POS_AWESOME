@@ -66,6 +66,7 @@
 					@show-about="showAboutDialog = true"
 					@toggle-theme="toggleTheme"
 					@logout="logOut"
+					@open-payment-dialog="openPaymentDialog"
 				/>
 			</template>
 		</NavbarAppBar>
@@ -384,6 +385,9 @@ export default {
 		},
 		syncPendingInvoices() {
 			this.$emit("sync-invoices");
+		},
+		openPaymentDialog() {
+			this.eventBus.emit("open_payment_dialog");
 		},
 		toggleManualOffline() {
 			this.$emit("toggle-offline");

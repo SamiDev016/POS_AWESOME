@@ -96,10 +96,29 @@ after_uninstall = "posawesome.uninstall.after_uninstall"
 # ---------------
 # Hook on document methods and events
 
+# doc_events = {
+#     "Sales Invoice": {
+#         "validate": "posawesome.posawesome.api.invoice.validate",
+#         "before_submit": "posawesome.posawesome.api.invoice.before_submit",
+#         "before_cancel": "posawesome.posawesome.api.invoice.before_cancel",
+#     },
+#     "POS Invoice": {
+#         "validate": "posawesome.posawesome.api.invoice.validate",
+#         "before_submit": "posawesome.posawesome.api.invoice.before_submit",
+#         "before_cancel": "posawesome.posawesome.api.invoice.before_cancel",
+#     },
+#     "Customer": {
+#         "validate": "posawesome.posawesome.api.customer.validate",
+#         "after_insert": "posawesome.posawesome.api.customer.after_insert",
+#     },
+# }
 doc_events = {
     "Sales Invoice": {
         "validate": "posawesome.posawesome.api.invoice.validate",
-        "before_submit": "posawesome.posawesome.api.invoice.before_submit",
+        "before_submit": [
+            "posawesome.posawesome.api.invoice.before_submit",
+            "posawesome.h_api.generate_salesinvoice_barcode"
+        ],
         "before_cancel": "posawesome.posawesome.api.invoice.before_cancel",
     },
     "POS Invoice": {
@@ -110,7 +129,7 @@ doc_events = {
     "Customer": {
         "validate": "posawesome.posawesome.api.customer.validate",
         "after_insert": "posawesome.posawesome.api.customer.after_insert",
-    },
+    }
 }
 
 # Scheduled Tasks
@@ -191,8 +210,11 @@ fixtures = [
                     "POS Profile-posa_allow_free_batch_return",
                     "POS Profile-posa_col_1",
                     "POS Profile-create_pos_invoice_instead_of_sales_invoice",
+                    "Payment Entry-custom_remark",
                     "POS Invoice-posa_is_printed",
                     "Sales Invoice-posa_is_printed",
+                    "Sales Invoice-custom_barcode",
+
                     "Sales Invoice Reference-pos_invoice",
                     "POS Profile-posa_local_storage",
                     "POS Profile-posa_force_server_items",

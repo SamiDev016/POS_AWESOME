@@ -1491,7 +1491,7 @@ export default {
 				if (
 					!this.is_credit_sale &&
 					!this.invoice_doc.is_return &&
-					this.total_payments <= 0 &&
+					this.total_payments < 0 &&
 					(this.invoice_doc.rounded_total || this.invoice_doc.grand_total) > 0
 				) {
 					this.eventBus.emit("show_message", {

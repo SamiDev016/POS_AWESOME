@@ -10,6 +10,7 @@
 		<NewAddress></NewAddress>
 		<MpesaPayments></MpesaPayments>
 		<Variants></Variants>
+		<PaymentDialog ref="paymentDialog" @payment-success="handlePaymentSuccess" @show-message="showMessage"></PaymentDialog>
 		<OpeningDialog v-if="dialog" :dialog="dialog"></OpeningDialog>
 		<v-row v-show="!dialog" dense class="ma-0 dynamic-main-row">
 			<v-col
@@ -53,6 +54,7 @@ import NewAddress from "./NewAddress.vue";
 import Variants from "./Variants.vue";
 import Returns from "./Returns.vue";
 import MpesaPayments from "./Mpesa-Payments.vue";
+import PaymentDialog from "./PaymentDialog.vue";
 import {
 	getOpeningStorage,
 	setOpeningStorage,
@@ -110,6 +112,7 @@ export default {
 		Variants,
 		MpesaPayments,
 		SalesOrders,
+		PaymentDialog,
 	},
 
 	methods: {
@@ -125,6 +128,16 @@ export default {
 			if (this.itemsLoaded && this.customersLoaded) {
 				console.info("Loading completed");
 			}
+		},
+		openPaymentDialog() {
+			this.$refs.paymentDialog.openDialog();
+		},
+		handlePaymentSuccess(data) {
+			console.log('Payment processed successfully:', data);
+			// You can add additional logic here if needed
+		},
+		showMessage(data) {
+			this.eventBus.emit("show_message", data);
 		},
 	},
 
@@ -153,6 +166,9 @@ export default {
 				this.payment = data === "true";
 				this.showOffers = false;
 				this.coupons = false;
+			});
+			this.eventBus.on("open_payment_dialog", () => {
+				this.openPaymentDialog();
 			});
 			this.eventBus.on("open_shift_details", () => {
 				this.get_closing_data();

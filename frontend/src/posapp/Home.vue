@@ -43,6 +43,7 @@
 import Navbar from "./components/Navbar.vue";
 import POS from "./components/pos/Pos.vue";
 import Payments from "./components/payments/Pay.vue";
+import History from "./components/pos/History.vue";
 import ClosingDialog from "./components/pos/ClosingDialog.vue";
 import AppLoadingOverlay from "./components/ui/LoadingOverlay.vue";
 import UpdatePrompt from "./components/ui/UpdatePrompt.vue";
@@ -157,6 +158,7 @@ export default {
 		Navbar,
 		POS,
 		Payments,
+		History,
 		ClosingDialog,
 		AppLoadingOverlay,
 		UpdatePrompt,

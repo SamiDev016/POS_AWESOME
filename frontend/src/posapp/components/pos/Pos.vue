@@ -12,7 +12,8 @@
 		<Variants></Variants>
 		<PaymentDialog ref="paymentDialog" @payment-success="handlePaymentSuccess" @show-message="showMessage"></PaymentDialog>
 		<OpeningDialog v-if="dialog" :dialog="dialog"></OpeningDialog>
-		<v-row v-show="!dialog" dense class="ma-0 dynamic-main-row">
+		<History v-if="showHistory"></History>
+		<v-row v-show="!dialog && !showHistory" dense class="ma-0 dynamic-main-row">
 			<v-col
 				v-show="!payment && !showOffers && !coupons"
 				xl="5"
@@ -55,6 +56,7 @@ import Variants from "./Variants.vue";
 import Returns from "./Returns.vue";
 import MpesaPayments from "./Mpesa-Payments.vue";
 import PaymentDialog from "./PaymentDialog.vue";
+import History from "./History.vue";
 import {
 	getOpeningStorage,
 	setOpeningStorage,
@@ -93,6 +95,7 @@ export default {
 			payment: false,
 			showOffers: false,
 			coupons: false,
+			showHistory: false,
 			itemsLoaded: false,
 			customersLoaded: false,
 		};
@@ -113,6 +116,7 @@ export default {
 		MpesaPayments,
 		SalesOrders,
 		PaymentDialog,
+		History,
 	},
 
 	methods: {
@@ -127,6 +131,22 @@ export default {
 		checkLoadingComplete() {
 			if (this.itemsLoaded && this.customersLoaded) {
 				console.info("Loading completed");
+			}
+		},
+		changePage(page) {
+			// Hide all sections first
+			this.payment = false;
+			this.showOffers = false;
+			this.coupons = false;
+			this.showHistory = false;
+			
+			// Show the selected section
+			if (page === "POS") {
+				// POS is the default view, nothing to show
+			} else if (page === "Payments") {
+				this.payment = true;
+			} else if (page === "History") {
+				this.showHistory = true;
 			}
 		},
 		openPaymentDialog() {
@@ -190,6 +210,9 @@ export default {
 			this.eventBus.on("items_loaded", () => {
 				this.itemsLoaded = true;
 				this.checkLoadingComplete();
+			});
+			this.eventBus.on("change-page", (page) => {
+				this.changePage(page);
 			});
 		});
 	},
